@@ -43,9 +43,14 @@ if ($host_id !== '' && is_numeric($host_id)) {
     $query .= " AND p.status = 'active'";
 }
 
+// Search across city, state and country together, so typing either the
+// city ("Udaipur") or the region/state ("Rajasthan") both work.
+$city = trim($city);
 if ($city !== '') {
-    $query .= " AND p.city LIKE ?";
-    $types .= "s";
+    $query .= " AND (LOWER(p.city) LIKE LOWER(?) OR LOWER(p.state) LIKE LOWER(?) OR LOWER(p.country) LIKE LOWER(?))";
+    $types .= "sss";
+    $params[] = "%" . $city . "%";
+    $params[] = "%" . $city . "%";
     $params[] = "%" . $city . "%";
 }
 
